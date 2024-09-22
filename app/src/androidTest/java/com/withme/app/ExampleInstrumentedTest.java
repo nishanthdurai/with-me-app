@@ -1,4 +1,4 @@
-package com.tutorconnect.withmeapp;
+package com.withme.app;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.tutorconnect.withmeapp", appContext.getPackageName());
+        assertEquals("com.withme.app", appContext.getPackageName());
     }
 }

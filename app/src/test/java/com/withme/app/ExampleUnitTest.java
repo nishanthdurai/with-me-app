@@ -1,4 +1,4 @@
-package com.tutorconnect.withmeapp;
+package com.withme.app;
 
 import org.junit.Test;
 

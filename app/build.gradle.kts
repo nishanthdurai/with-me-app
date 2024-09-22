@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.tutorconnect.withmeapp"
+    namespace = "com.withme.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.tutorconnect.withmeapp"
+        applicationId = "com.withme.app"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
