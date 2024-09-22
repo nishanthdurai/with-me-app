@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
-    id("com.google.gms.google-services")
+    id("com.android.application")
+    id("com.google.gms.google-services") // Apply the Google services plugin
 }
 
 android {
@@ -44,4 +44,5 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
 }
