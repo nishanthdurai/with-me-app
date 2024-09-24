@@ -129,4 +129,14 @@
         android:paddingEnd="24dp"
         android:text="Edit Profile"
         android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#2E3A59"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:text="Logout"
+        android:textColor="@android:color/holo_red_light" />
 </LinearLayout>

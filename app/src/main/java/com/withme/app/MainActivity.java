@@ -1,6 +1,9 @@
 package com.withme.app;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,10 +12,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
     private FragmentNavigationViewModel navigationViewModel;
+
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +29,23 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.custom_toolbar);
         setSupportActionBar(toolbar);
+
+        // login user when activity open.
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Getting user please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signInWithEmailAndPassword("nishanthduraisamy@gmail.com", "Nishanth@1234")
+                .addOnCompleteListener(this, task -> {
+                    progressDialog.dismiss();
+                    if (task.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "Login success", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.e("wmaError", "onCreate: ", task.getException());
+                        Toast.makeText(getApplicationContext(), "Invalid email or password", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
         navigationViewModel = new ViewModelProvider(this).get(FragmentNavigationViewModel.class);
 
