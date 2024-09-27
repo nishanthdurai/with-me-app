@@ -7,13 +7,12 @@
     android:padding="16dp">
 
     <!-- Profile Image -->
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/circle_background"
         android:contentDescription="Profile Picture"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_user" />
@@ -37,7 +36,7 @@
         android:layout_marginBottom="20dp"
         android:clickable="true"
         android:focusable="true"
-        android:text="Click Change Profile Picture"
+        android:text="@string/click_change_profile_picture"
         android:textColor="@color/accent_color"
         android:textSize="16sp"
         android:textStyle="italic" />
@@ -61,29 +60,29 @@
         android:gravity="center"
         android:hint="Eg: Muthu"
         android:padding="10dp"
-        android:text="Muthu"
         android:textSize="16sp" />
 
     <!-- Change Username Link -->
     <TextView
         android:id="@+id/change_username"
-        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:layout_marginBottom="4dp"
-        android:text="Change Username"
+        android:text="Change Bio"
         android:textColor="@android:color/black"
         android:textSize="14sp" />
 
     <EditText
-        android:id="@+id/et_username_display"
+        android:id="@+id/et_bio_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:background="@drawable/edittext_background"
         android:gravity="center"
+        android:hint="Hello there I'm using WithMe :)"
         android:padding="10dp"
-        android:text="\muthu_muthu"
+        android:text=""
         android:textSize="16sp" />
 
     <!-- Change Password Link -->
@@ -104,9 +103,19 @@
         android:layout_marginBottom="10dp"
         android:background="@drawable/edittext_background"
         android:gravity="center"
+        android:hint="New Password"
         android:inputType="textPassword"
         android:padding="10dp"
-        android:text="password"
         android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/btn_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:text="Update"
+        android:textColor="@android:color/black"
+        android:textSize="14sp" />
 
 </LinearLayout>

@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.show();
         firebaseAuth = FirebaseAuth.getInstance();
-        firebaseAuth.signInWithEmailAndPassword("nishanthduraisamy@gmail.com", "Nishanth@1234")
+        firebaseAuth.signInWithEmailAndPassword("nishanthduraisamy@gmail.com", "Muthu@1234")
                 .addOnCompleteListener(this, task -> {
                     progressDialog.dismiss();
                     if (task.isSuccessful()) {
