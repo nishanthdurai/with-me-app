@@ -69,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
                         loadFragment(new ProfileFragment());
                         return true;
                     }
+                    if (item.getItemId() == R.id.nav_add) {// Handle the "Home" action
+                        loadFragment(new AddPostFragment());
+                        return true;
+                    }
                     return false;
                 });
 
