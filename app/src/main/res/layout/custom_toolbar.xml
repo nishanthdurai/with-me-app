@@ -16,7 +16,7 @@
             android:id="@+id/logo"
             android:layout_width="150dp"
             android:layout_height="?attr/actionBarSize"
-            android:src="@drawable/withme_logo" /> <!-- Replace with your logo drawable -->
+            android:src="@drawable/ic_logo" /> <!-- Replace with your logo drawable -->
 
     </LinearLayout>
 
@@ -34,7 +34,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/withme_yummy" />
+            android:src="@drawable/ic_yummy" />
 
         <!-- Second Icon -->
         <ImageView
@@ -42,7 +42,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/withme_comment" />
+            android:src="@drawable/ic_comment" />
 
     </LinearLayout>
 
