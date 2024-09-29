@@ -2,7 +2,6 @@ package com.withme.app;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.withme.app.models.UserBio;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class ProfileFragment extends Fragment {
 
@@ -27,6 +25,8 @@ public class ProfileFragment extends Fragment {
     private FirebaseUser user;
 
     private ProgressDialog progressDialog;
+
+    private FirebaseDatabase firebaseDatabase;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,11 +37,7 @@ public class ProfileFragment extends Fragment {
         view.findViewById(R.id.edit_profile_button).setOnClickListener(v ->
                 navigationViewModel.setFragmentToLoad(EditProfileFragment.class));
 
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("Loading...");
-        progressDialog.setMessage("Please wait while do our job");
-        progressDialog.show();
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         if (user.getDisplayName() == null) {
             ((TextView) view.findViewById(R.id.profile_name)).setText(user.getEmail());
@@ -54,17 +50,17 @@ public class ProfileFragment extends Fragment {
                     .into((ImageView) view.findViewById(R.id.profile_image));
         }
 
-        // fetch update bio if exists in fire store
-        FirebaseFirestore.getInstance().collection("users")
-                .document(user.getUid()).get().addOnSuccessListener(documentSnapshot -> {
-                    progressDialog.dismiss();
-                    if (documentSnapshot.exists()) {
-                        UserBio userBio = documentSnapshot.toObject(UserBio.class);
-                        ((TextView) view.findViewById(R.id.tv_user_bio)).setText(userBio.getBio());
+        // fetch update bio if exists in realtime database
+        firebaseDatabase.getReference("users").child(user.getUid()).child("bio")
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String bio = task.getResult().getValue(String.class);
+                        if (bio != null) {
+                            ((TextView) view.findViewById(R.id.tv_user_bio)).setText(bio);
+                        }
                     }
                 }).addOnFailureListener((err) -> {
-                    progressDialog.dismiss();
-                    Log.e("WithMeErr", "onCreateView: ", err);
+                    Toast.makeText(getActivity(), "Failed to fetch bio", Toast.LENGTH_SHORT).show();
                 });
 
         view.findViewById(R.id.logout_button).setOnClickListener(v -> {

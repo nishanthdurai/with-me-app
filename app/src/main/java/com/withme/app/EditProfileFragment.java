@@ -2,11 +2,9 @@ package com.withme.app;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +20,9 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.withme.app.models.UserBio;
 
 import java.util.Objects;
 
@@ -40,14 +37,14 @@ public class EditProfileFragment extends Fragment {
 
     private EditText etName;
     private EditText etBio;
-    private EditText etPassword;
     private Button btnUpdate;
     private CircleImageView ivProfileImage;
     private TextView profileName;
     private TextView tvChangeImage;
 
     private Uri imageUri;
-    private ProgressDialog progressDialog;
+
+    private FirebaseDatabase firebaseDatabase;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,7 +52,6 @@ public class EditProfileFragment extends Fragment {
 
         etName = view.findViewById(R.id.et_name_display);
         etBio = view.findViewById(R.id.et_bio_display);
-        etPassword = view.findViewById(R.id.et_password_display);
         btnUpdate = view.findViewById(R.id.btn_update);
         ivProfileImage = view.findViewById(R.id.profile_image);
         profileName = view.findViewById(R.id.profile_name);
@@ -64,6 +60,8 @@ public class EditProfileFragment extends Fragment {
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference("profile_pictures");
         user = FirebaseAuth.getInstance().getCurrentUser();
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         // Set display name or email as fallback
         if (user != null && user.getDisplayName() != null) {
@@ -78,25 +76,17 @@ public class EditProfileFragment extends Fragment {
             Glide.with(this).load(user.getPhotoUrl()).into(ivProfileImage);
         }
 
-        // Show progress dialog while fetching bio
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setCancelable(false);
-        progressDialog.setTitle("Loading...");
-        progressDialog.setMessage("Please wait while we load your profile");
-        progressDialog.show();
-
-        // Fetch user bio from Firestore
-        FirebaseFirestore.getInstance().collection("users")
-                .document(user.getUid()).get().addOnSuccessListener(documentSnapshot -> {
-                    progressDialog.dismiss();
-                    if (documentSnapshot.exists()) {
-                        UserBio userBio = documentSnapshot.toObject(UserBio.class);
-                        etBio.setText(userBio.getBio());
+        // Fetch user bio from realtime firebase
+        firebaseDatabase.getReference("users").child(user.getUid()).child("bio")
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String bio = task.getResult().getValue(String.class);
+                        if (bio != null) {
+                            etBio.setText(bio);
+                        }
                     }
-                }).addOnFailureListener(err -> {
-                    progressDialog.dismiss();
-                    Log.e("WithMeErr", "Error fetching bio: ", err);
-                    Toast.makeText(getActivity(), "Failed to load profile data", Toast.LENGTH_SHORT).show();
+                }).addOnFailureListener((err) -> {
+                    Toast.makeText(getActivity(), "Failed to fetch bio", Toast.LENGTH_SHORT).show();
                 });
 
         // Set up profile image click listener to select new image
@@ -128,9 +118,6 @@ public class EditProfileFragment extends Fragment {
     }
 
     private void validateAndUpdateProfile() {
-        progressDialog.setMessage("Updating profile...");
-        progressDialog.show();
-
         // Update display name if changed
         if (!etName.getText().toString().equals(user.getDisplayName())) {
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
@@ -143,35 +130,18 @@ public class EditProfileFragment extends Fragment {
             });
         }
 
-        // Update password if the user wants to change it (with validation)
-        if (!etPassword.getText().toString().isEmpty()) {
-            if (etPassword.getText().toString().length() >= 6) {
-                user.updatePassword(etPassword.getText().toString()).addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Toast.makeText(getActivity(), "Password update failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } else {
-                Toast.makeText(getActivity(), "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
-                progressDialog.dismiss();
-                return;
-            }
-        }
-
-        // Update bio in Firestore
+        // Update bio in realtime database
         if (!etBio.getText().toString().isEmpty()) {
-            UserBio userBio = new UserBio(user.getUid(), etBio.getText().toString());
-            FirebaseFirestore.getInstance().collection("users")
-                    .document(user.getUid()).set(userBio);
+            firebaseDatabase.getReference("users").child(user.getUid()).child("bio")
+                    .setValue(etBio.getText());
         }
 
         // Upload image if selected
         if (imageUri != null) {
             uploadImageToFirebaseStorage();
-        } else {
-            progressDialog.dismiss();
-            Toast.makeText(getActivity(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
         }
+
+        Toast.makeText(getActivity(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
     }
 
     // Upload image to Firebase Storage and update profile
@@ -183,7 +153,6 @@ public class EditProfileFragment extends Fragment {
                 updateProfileImageUri(uri.toString());
             });
         }).addOnFailureListener(e -> {
-            progressDialog.dismiss();
             Toast.makeText(getActivity(), "Failed to upload image", Toast.LENGTH_SHORT).show();
         });
     }
@@ -196,10 +165,8 @@ public class EditProfileFragment extends Fragment {
 
         user.updateProfile(profileUpdates).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                progressDialog.dismiss();
                 Toast.makeText(getActivity(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
             } else {
-                progressDialog.dismiss();
                 Toast.makeText(getActivity(), "Failed to update profile image", Toast.LENGTH_SHORT).show();
             }
         });

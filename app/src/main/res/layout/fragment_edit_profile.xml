@@ -85,28 +85,6 @@
         android:text=""
         android:textSize="16sp" />
 
-    <!-- Change Password Link -->
-    <TextView
-        android:id="@+id/change_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="4dp"
-        android:text="Change Password"
-        android:textColor="@android:color/black"
-        android:textSize="14sp" />
-
-    <EditText
-        android:id="@+id/et_password_display"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/edittext_background"
-        android:gravity="center"
-        android:hint="New Password"
-        android:inputType="textPassword"
-        android:padding="10dp"
-        android:textSize="16sp" />
 
     <Button
         android:id="@+id/btn_update"
